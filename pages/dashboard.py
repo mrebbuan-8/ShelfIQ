@@ -28,6 +28,7 @@ else:
 df['active_stock_value_retail'] = df['current_stock_level'] * df['base_price_php']
 
 # --- TIME HORIZON ANCHORING ---
+df['arrival_date'] = pd.to_datetime(df['arrival_date'])
 anchor_date = df['arrival_date'].max()
 ninety_days_ago = anchor_date - timedelta(days=90)
 current_month = anchor_date.month
