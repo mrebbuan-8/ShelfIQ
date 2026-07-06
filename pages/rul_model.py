@@ -146,6 +146,38 @@ if 'active_risks' in st.session_state:
         use_container_width=True
     )
     
+    tier_map = {
+        1: "🔴 Final Markdown (<24 hrs)",
+        2: "🟠 Priority Sell (1-2 days)",
+        3: "🟡 Early Markdown (3-5 days)",
+        4: "🟢 Watch (5+ days)"
+    }
+    
+    UPCYCLE_RULES = ['Produce', 'Dairy']
+    
+    def generate_action(row):
+        tier = row['spoilage_risk_probability']
+        category = row['product_category']
+        can_upcycle = category in UPCYCLE_RULES
+        
+        if tier == 4:
+            return "No action"
+        elif tier == 3:
+            return "Discount 5-10%"
+        elif tier == 2:
+            if can_upcycle:
+                return "Recommend Upcycle"
+            else:
+                return "Discount 15-25%"
+        elif tier == 1:
+            if can_upcycle:
+                return "Strongly recommend Upcycle"
+            else:
+                return "Discount 30-50%"
+        return "Review manually"
+
+    df_risks['Recommended Action'] = df_risks.apply(generate_action, axis=1)
+    
     display_df = df_risks.rename(columns={
         'item_sku': 'SKU',
         'product_name': 'Product Name',
@@ -159,12 +191,6 @@ if 'active_risks' in st.session_state:
         'spoilage_risk_probability': 'Urgency Tier'
     })
     
-    tier_map = {
-        1: "🔴 Final Markdown (<24 hrs)",
-        2: "🟠 Priority Sell (1-2 days)",
-        3: "🟡 Early Markdown (3-5 days)",
-        4: "🟢 Watch (5+ days)"
-    }
     display_df['Urgency Tier'] = display_df['Urgency Tier'].map(tier_map)
     
     st.dataframe(
@@ -174,6 +200,10 @@ if 'active_risks' in st.session_state:
             "Urgency Tier": st.column_config.TextColumn(
                 "Urgency Tier",
                 help="Based on Remaining Useful Life (RUL)."
+            ),
+            "Recommended Action": st.column_config.TextColumn(
+                "Recommended Action",
+                help="Automated strategy based on RUL tier."
             ),
             "Risk Flag": None,
         }
