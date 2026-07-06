@@ -73,8 +73,9 @@ with col1:
                 st.session_state['feature_df'] = df_importances
                 
                 # 3. INFERENCE: Predict on CURRENT stock levels
-                # The data loading logic already converts dates to datetime
+                # Convert dates to datetime
                 df['expiry_date'] = pd.to_datetime(df['expiry_date'])
+                df['arrival_date'] = pd.to_datetime(df['arrival_date'])
                 current_date = df['arrival_date'].max()
                 
                 df_pred = df.copy()
