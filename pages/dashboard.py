@@ -10,6 +10,7 @@ st.title("📊 Store Performance & Inventory Dashboard")
 # Check if the user uploaded a file in app.py first
 if 'master_data' in st.session_state:
     df = st.session_state['master_data'].copy()
+    df['arrival_date'] = pd.to_datetime(df['arrival_date'])
     st.success("✅ Displaying metrics from the live user-uploaded dataset.")
 else:
     # LOCAL DEVELOPMENT FALLBACK: Auto-loads your sample dataset file for offline debugging
