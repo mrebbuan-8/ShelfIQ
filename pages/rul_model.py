@@ -101,10 +101,13 @@ with col1:
                                          (df_pred['days_to_sell'] >= 0)].copy()
                 
                 export_cols = [
-                    'item_sku', 'product_name', 'product_category', 'supplier_name', 
+                    'item_sku', 'product_name', 'product_category', 'supplier_name',
                     'arrival_date', 'expiry_date', 'current_stock_level', 'daily_demand',
-                    'spoilage_risk_probability'
+                    'spoilage_risk_probability', 'days_to_sell', 'selling_price',
+                    'items_spoiled'
                 ]
+                # Only keep columns that actually exist in the dataframe
+                export_cols = [c for c in export_cols if c in df_integration.columns]
                 
                 # Convert dates to strings for cleaner display
                 for col in ['arrival_date', 'expiry_date']:
