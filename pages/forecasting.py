@@ -140,13 +140,14 @@ else:
         st.session_state["master_data"] = df
 
         st.warning(
-            "⚠️ No active user upload detected. "
-            "Displaying local 'capstone_dataset_2years.csv' sample file as fallback."
+            "No inventory file has been uploaded yet, so we're showing sample data for now. "
+            "Upload your store's CSV from the sidebar to see your own forecast."
         )
 
     except FileNotFoundError:
         st.error(
-            "❌ Please upload a CSV file on the Home Page (app.py) first."
+            "We need your inventory file to generate a forecast. "
+            "Please upload your CSV using the sidebar to continue."
         )
         st.stop()
 

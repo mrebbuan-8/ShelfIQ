@@ -10,7 +10,7 @@ st.title("RUL Spoilage Predictor Engine")
 st.markdown("Run the Machine Learning pipeline to dynamically train a Random Forest and generate the latest active spoilage risks for the current inventory.")
 
 if 'master_data' not in st.session_state:
-    st.warning("Master data not found. Please upload your inventory CSV on the main portal page first.")
+    st.warning("We need your inventory file to run the spoilage model. Please upload your CSV using the sidebar to continue.")
     st.stop()
 
 df = st.session_state['master_data'].copy()

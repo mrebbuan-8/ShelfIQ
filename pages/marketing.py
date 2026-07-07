@@ -188,8 +188,8 @@ def apply_marketing_actions(df: pd.DataFrame) -> pd.DataFrame:
 # ============================================================
 if "active_risks" not in st.session_state:
     st.warning(
-        "No spoilage risk data found yet. Run the pipeline on the "
-        "**RUL Spoilage Predictor** page first, then come back here."
+        "No spoilage risk results yet. Please run the spoilage model on the "
+        "**RUL Model** page first, then come back here for marketing recommendations."
     )
     st.stop()
 
