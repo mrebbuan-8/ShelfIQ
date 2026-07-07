@@ -5,10 +5,10 @@ st.set_page_config(page_title="MSME Inventory Portal", layout="wide")
 
 # --- PAGE NAVIGATION (app.py orchestrates only, no page content of its own) ---
 pages = [
-    st.Page("pages/dashboard.py", title="Dashboard", icon="📊"),
-    st.Page("pages/forecasting.py", title="Forecasting", icon="🔮"),
-    st.Page("pages/marketing.py", title="Marketing", icon="🏷️"),
-    st.Page("pages/rul_model.py", title="RUL Model", icon="⏳"),
+    st.Page("pages/dashboard.py", title="Dashboard", icon=":material/dashboard:"),
+    st.Page("pages/forecasting.py", title="Forecasting", icon=":material/insights:"),
+    st.Page("pages/marketing.py", title="Marketing", icon=":material/campaign:"),
+    st.Page("pages/rul_model.py", title="RUL Model", icon=":material/schedule:"),
 ]
 nav = st.navigation(pages)
 
@@ -17,8 +17,30 @@ with st.sidebar:
     st.markdown("")  # spacer to push upload control toward the bottom
     st.divider()
     st.markdown("**📥 Global Master Data**")
+    st.html(
+        """
+        <style>
+            [data-testid="stFileUploader"] section button {
+                width: 100% !important;
+            }
+            [data-testid="stFileUploader"] section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            [data-testid="stFileUploader"] section small {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        </style>
+        """
+    )
     uploaded_file = st.file_uploader(
-        "Upload store inventory CSV", type=["csv"], key="global_master_data_uploader"
+        "Upload store inventory CSV",
+        type=["csv"],
+        key="global_master_data_uploader",
+        label_visibility="collapsed",
     )
 
     if uploaded_file is not None:
