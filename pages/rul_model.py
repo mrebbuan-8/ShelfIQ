@@ -17,113 +17,107 @@ df = st.session_state['master_data'].copy()
 
 st.divider()
 
-col1, col2 = st.columns([1, 2])
+with st.spinner("Training Spoilage Engine..."):
+    try:
+        # 1. Target Variable (Ground Truth)
+        df['will_spoil'] = np.where(df['items_spoiled'] > 0, 1, 0)
 
-with col1:
-    st.subheader("Command Center")
-    st.markdown("Trigger a full retraining and prediction run of the Spoilage Engine.")
-    
-    if st.button("Run Spoilage ML Pipeline", use_container_width=True):
-        with st.spinner("Training Spoilage Engine in memory..."):
-            try:
-                # 1. Target Variable (Ground Truth)
-                df['will_spoil'] = np.where(df['items_spoiled'] > 0, 1, 0)
-                
-                # 2. Semantic Feature Mapping (TRAINING)
-                df['stock_to_sell'] = df['quantity_received']
-                df['days_to_sell'] = df['shelf life days']
-                
-                sensitivity_map = {'Low': 1, 'Medium': 2, 'High': 3}
-                df['sensitivity_score'] = df['spoilage_sensitivity'].map(sensitivity_map).fillna(2)
-                
-                features = [
-                    'stock_to_sell', 
-                    'days_to_sell', 
-                    'daily_demand', 
-                    'supplier_lead_time_days', 
-                    'sensitivity_score'
-                ]
-                
-                df_train = df.dropna(subset=features + ['will_spoil']).copy()
-                X = df_train[features]
-                y = df_train['will_spoil']
-                
-                # Train model
-                model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
-                model.fit(X, y)
-                
-                # Feature importance
-                importances = model.feature_importances_
-                indices = np.argsort(importances)[::-1]
-                
-                feature_name_map = {
-                    'stock_to_sell': 'Current Stock',
-                    'days_to_sell': 'Days to Sell',
-                    'daily_demand': 'Daily Demand',
-                    'supplier_lead_time_days': 'Supplier Lead Time',
-                    'sensitivity_score': 'Spoilage Sensitivity'
-                }
-                friendly_features = [feature_name_map.get(features[i], features[i]) for i in indices]
-                
-                df_importances = pd.DataFrame({
-                    "Feature": friendly_features,
-                    "Importance Score": importances[indices]
-                }).sort_values("Importance Score", ascending=True).set_index("Feature")
-                
-                st.session_state['feature_df'] = df_importances
-                
-                # 3. INFERENCE: Predict on CURRENT stock levels
-                # Convert dates to datetime
-                df['expiry_date'] = pd.to_datetime(df['expiry_date'])
-                df['arrival_date'] = pd.to_datetime(df['arrival_date'])
-                current_date = df['arrival_date'].max()
-                
-                df_pred = df.copy()
-                df_pred['stock_to_sell'] = df_pred['current_stock_level']
-                df_pred['days_to_sell'] = (df_pred['expiry_date'] - current_date).dt.days
-                df_pred['sensitivity_score'] = df_pred['spoilage_sensitivity'].map(sensitivity_map).fillna(2)
-                
-                # Drop rows with NaNs in features just to be safe during prediction
-                df_pred = df_pred.dropna(subset=features)
-                
-                def map_urgency(days):
-                    if days >= 5: return 4
-                    elif days >= 3: return 3
-                    elif days >= 1: return 2
-                    else: return 1
+        # Convert dates early so both training and inference use the same scale
+        df['expiry_date'] = pd.to_datetime(df['expiry_date'])
+        df['arrival_date'] = pd.to_datetime(df['arrival_date'])
 
-                df_pred['spoilage_risk_probability'] = df_pred['days_to_sell'].apply(map_urgency)
-                df_pred['predicted_spoil_risk'] = model.predict(df_pred[features])
-                
-                # Filter for active integration targets
-                df_integration = df_pred[(df_pred['predicted_spoil_risk'] == 1) & 
-                                         (df_pred['current_stock_level'] > 0) & 
-                                         (df_pred['days_to_sell'] >= 0)].copy()
-                
-                export_cols = [
-                    'item_sku', 'product_name', 'product_category', 'supplier_name',
-                    'arrival_date', 'expiry_date', 'current_stock_level', 'daily_demand',
-                    'spoilage_risk_probability', 'days_to_sell', 'selling_price',
-                    'items_spoiled'
-                ]
-                # Only keep columns that actually exist in the dataframe
-                export_cols = [c for c in export_cols if c in df_integration.columns]
-                
-                # Convert dates to strings for cleaner display
-                for col in ['arrival_date', 'expiry_date']:
-                    df_integration[col] = df_integration[col].dt.strftime('%Y-%m-%d')
-                
-                st.session_state['active_risks'] = df_integration[export_cols]
-                st.success("Pipeline executed successfully!")
-            except Exception as e:
-                st.error(f"Execution error: {str(e)}")
+        # 2. Semantic Feature Mapping (TRAINING)
+        df['stock_to_sell'] = df['quantity_received']
+        # Compute from dates (consistent with inference) instead of raw shelf life column
+        df['days_to_sell'] = (df['expiry_date'] - df['arrival_date']).dt.days
 
-with col2:
-    st.subheader("Feature Importances")
-    if 'feature_df' in st.session_state:
-        st.bar_chart(st.session_state['feature_df'], horizontal=True)
-    else:
-        st.info("Feature importance chart will appear here after the pipeline runs.")
+        sensitivity_map = {'Low': 1, 'Medium': 2, 'High': 3}
+        df['sensitivity_score'] = df['spoilage_sensitivity'].map(sensitivity_map).fillna(2)
+
+        features = [
+            'stock_to_sell',
+            'days_to_sell',
+            'daily_demand',
+            'supplier_lead_time_days',
+            'sensitivity_score'
+        ]
+
+        df_train = df.dropna(subset=features + ['will_spoil']).copy()
+        X = df_train[features]
+        y = df_train['will_spoil']
+
+        # Train model
+        model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+        model.fit(X, y)
+
+        # Feature importance
+        importances = model.feature_importances_
+        indices = np.argsort(importances)[::-1]
+
+        feature_name_map = {
+            'stock_to_sell': 'Current Stock',
+            'days_to_sell': 'Days to Sell',
+            'daily_demand': 'Daily Demand',
+            'supplier_lead_time_days': 'Supplier Lead Time',
+            'sensitivity_score': 'Spoilage Sensitivity'
+        }
+        friendly_features = [feature_name_map.get(features[i], features[i]) for i in indices]
+
+        df_importances = pd.DataFrame({
+            "Feature": friendly_features,
+            "Importance Score": importances[indices]
+        }).sort_values("Importance Score", ascending=True).set_index("Feature")
+
+        st.session_state['feature_df'] = df_importances
+
+        # 3. INFERENCE: Predict on CURRENT stock levels
+        # Use today's actual date (not max arrival date)
+        current_date = pd.Timestamp.today().normalize()
+
+        df_pred = df.copy()
+        df_pred['stock_to_sell'] = df_pred['current_stock_level']
+        df_pred['days_to_sell'] = (df_pred['expiry_date'] - current_date).dt.days
+        df_pred['sensitivity_score'] = df_pred['spoilage_sensitivity'].map(sensitivity_map).fillna(2)
+
+        # Drop rows with NaNs in features just to be safe during prediction
+        df_pred = df_pred.dropna(subset=features)
+
+        def map_urgency(days):
+            if days >= 5: return 4
+            elif days >= 3: return 3
+            elif days >= 1: return 2
+            else: return 1
+
+        df_pred['spoilage_risk_probability'] = df_pred['days_to_sell'].apply(map_urgency)
+        df_pred['predicted_spoil_risk'] = model.predict(df_pred[features])
+
+        # Filter for active integration targets
+        df_integration = df_pred[(df_pred['predicted_spoil_risk'] == 1) &
+                                  (df_pred['current_stock_level'] > 0) &
+                                  (df_pred['days_to_sell'] >= 0)].copy()
+
+        export_cols = [
+            'item_sku', 'product_name', 'product_category', 'supplier_name',
+            'arrival_date', 'expiry_date', 'current_stock_level', 'daily_demand',
+            'spoilage_risk_probability', 'days_to_sell', 'selling_price',
+            'items_spoiled'
+        ]
+        # Only keep columns that actually exist in the dataframe
+        export_cols = [c for c in export_cols if c in df_integration.columns]
+
+        # Convert dates to strings for cleaner display
+        for col in ['arrival_date', 'expiry_date']:
+            df_integration[col] = df_integration[col].dt.strftime('%Y-%m-%d')
+
+        st.session_state['active_risks'] = df_integration[export_cols]
+
+    except Exception as e:
+        st.error(f"Execution error: {str(e)}")
+        st.stop()
+
+st.subheader("Feature Importances")
+if 'feature_df' in st.session_state:
+    st.bar_chart(st.session_state['feature_df'], horizontal=True)
 
 st.divider()
 
