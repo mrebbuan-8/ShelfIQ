@@ -3,7 +3,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Marketing Action Engine", layout="wide")
 
-st.title("🏷️ Marketing Action Engine")
+st.title(":material/campaign: Marketing Action Engine")
 st.markdown(
     "Turns each item's spoilage risk into a concrete next business action: "
     "discount it, upcycle it, or leave it alone."

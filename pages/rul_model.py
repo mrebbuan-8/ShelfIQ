@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 st.set_page_config(page_title="RUL Spoilage Predictor", layout="wide")
 
-st.title("RUL Spoilage Predictor Engine")
+st.title(":material/schedule: Spoilage/Expiry Prediction")
 st.markdown("Run the Machine Learning pipeline to dynamically train a Random Forest and generate the latest active spoilage risks for the current inventory.")
 
 if 'master_data' not in st.session_state:

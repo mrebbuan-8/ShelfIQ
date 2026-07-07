@@ -116,7 +116,7 @@ def forecast_future(xgb_model, df, sku, forecast_days):
 
 
 # # title
-st.title("🔮 Inventory Forecasting and Replenishment Decision Support System")
+st.title(":material/insights: Inventory Forecasting and Replenishment Decision Support System")
 st.subheader("A machine learning–based inventory forecasting and decision support system.")
 
 # # csv upload

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="Operational Dashboard", layout="wide")
 
-st.title("📊 Store Performance & Inventory Dashboard")
+st.title(":material/dashboard: Store Performance & Inventory Dashboard")
 
 # --- DATA RETRIEVAL BRIDGE ---
 # Check if the user uploaded a file in app.py first
