@@ -9,14 +9,6 @@ st.html(
     <style>
         :root { --brand-green: #22c55e; }
 
-        /* Section headings: green left-accent bar, e.g. "### Section Title" */
-        [data-testid="stMain"] h2,
-        [data-testid="stMain"] h3,
-        [data-testid="stMain"] h4 {
-            border-left: 4px solid var(--brand-green);
-            padding-left: 0.75rem;
-        }
-
         /* Sidebar nav rail: rounded, highlighted active page */
         section[data-testid="stSidebar"] a[data-testid="stSidebarNavLink"],
         section[data-testid="stSidebar"] li a {
@@ -82,9 +74,9 @@ st.logo("assets/shelfiq_logo.png", size="large")
 # --- PAGE NAVIGATION (app.py orchestrates only, no page content of its own) ---
 pages = [
     st.Page("pages/dashboard.py", title="Dashboard", icon=":material/dashboard:"),
-    st.Page("pages/forecasting.py", title="Forecasting", icon=":material/insights:"),
-    st.Page("pages/marketing.py", title="Marketing Action Engine", icon=":material/campaign:"),
     st.Page("pages/rul_model.py", title="Spoilage/Expiry Prediction", icon=":material/schedule:"),
+    st.Page("pages/marketing.py", title="Marketing Action Engine", icon=":material/campaign:"),
+    st.Page("pages/forecasting.py", title="Forecasting", icon=":material/insights:"),
 ]
 nav = st.navigation(pages)
 

@@ -144,10 +144,10 @@ if 'active_risks' in st.session_state:
     )
     
     tier_map = {
-        1: "🔴 Final Markdown (<24 hrs)",
-        2: "🟠 Priority Sell (1-2 days)",
-        3: "🟡 Early Markdown (3-5 days)",
-        4: "🟢 Watch (5+ days)"
+        1: "Final Markdown (<24 hrs)",
+        2: "Priority Sell (1-2 days)",
+        3: "Early Markdown (3-5 days)",
+        4: "Watch (5+ days)"
     }
     
     UPCYCLE_RULES = ['Produce', 'Dairy']
