@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 
-st.set_page_config(page_title="RUL Spoilage Predictor", layout="wide")
+st.set_page_config(page_title="ShelfIQ", layout="wide")
 
 st.title(":material/schedule: Spoilage/Expiry Prediction")
 st.markdown("Run the Machine Learning pipeline to dynamically train a Random Forest and generate the latest active spoilage risks for the current inventory.")

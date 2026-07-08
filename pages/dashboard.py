@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="Operational Dashboard", layout="wide")
+st.set_page_config(page_title="ShelfIQ", layout="wide")
 
 st.title(":material/dashboard: Store Performance & Inventory Dashboard")
 
