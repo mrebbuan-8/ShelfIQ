@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="MSME Inventory Portal", layout="wide")
+st.set_page_config(page_title="ShelfIQ", layout="wide")
 
 # --- GLOBAL DARK NAVY + GREEN CARD THEME (brand color #22c55e) ---
 st.html(

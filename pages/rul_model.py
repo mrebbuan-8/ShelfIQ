@@ -115,12 +115,6 @@ with st.spinner("Training Spoilage Engine..."):
         st.error(f"Execution error: {str(e)}")
         st.stop()
 
-st.subheader("Feature Importances")
-if 'feature_df' in st.session_state:
-    st.bar_chart(st.session_state['feature_df'], horizontal=True)
-
-st.divider()
-
 st.subheader("Active Spoilage Risks")
 st.markdown("These are the items currently in stock that the model predicts will spoil before selling out.")
 
@@ -129,10 +123,23 @@ if 'active_risks' in st.session_state:
     
     total_risks = len(df_risks)
     critical_risks = len(df_risks[df_risks['spoilage_risk_probability'] == 1])
-    
-    col_m1, col_m2 = st.columns(2)
+
+    # Most at-risk item: lowest days_to_sell (soonest to expire)
+    most_at_risk_row = df_risks.sort_values('days_to_sell').iloc[0]
+    most_at_risk_item = most_at_risk_row['product_name']
+
+    # Category with the most Final Markdown (<24 hrs) items
+    final_markdown_df = df_risks[df_risks['spoilage_risk_probability'] == 1]
+    if not final_markdown_df.empty:
+        most_urgent_category = final_markdown_df['product_category'].value_counts().idxmax()
+    else:
+        most_urgent_category = "None"
+
+    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
     col_m1.metric(label="Total Active Risks Identified", value=f"{total_risks:,}")
-    col_m2.metric(label="Final Markdown (<24 hrs)", value=f"{critical_risks:,}", delta="Urgent Action Required", delta_color="inverse")
+    col_m2.metric(label="Final Markdown (<24 hrs)", value=f"{critical_risks:,}", help="Urgent action required")
+    col_m3.metric(label="Most At-Risk Item", value=most_at_risk_item)
+    col_m4.metric(label="Most Urgent Category", value=most_urgent_category)
     
     csv = df_risks.to_csv(index=False).encode('utf-8')
     st.download_button(
@@ -185,7 +192,10 @@ if 'active_risks' in st.session_state:
         'current_stock_level': 'Stock Level',
         'daily_demand': 'Daily Demand',
         'predicted_spoil_risk': 'Risk Flag',
-        'spoilage_risk_probability': 'Urgency Tier'
+        'spoilage_risk_probability': 'Urgency Tier',
+        'days_to_sell': 'Days to Sell',
+        'selling_price': 'Selling Price',
+        'items_spoiled': 'Items Spoiled'
     })
     
     display_df['Urgency Tier'] = display_df['Urgency Tier'].map(tier_map)
