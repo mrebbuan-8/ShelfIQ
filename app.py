@@ -31,6 +31,15 @@ st.html(
             margin: 0.75rem 0 1rem 0;
         }
 
+        /* Tabs: rounded background highlight on the active tab, not just text/underline */
+        button[data-testid="stTab"] {
+            border-radius: 8px 8px 0 0 !important;
+            padding: 0.5rem 1rem !important;
+        }
+        button[data-testid="stTab"][aria-selected="true"] {
+            background-color: rgba(34, 197, 94, 0.14) !important;
+        }
+
         /* Card-style content blocks: KPI tiles, tables, expanders */
         div[data-testid="stMetric"],
         div[data-testid="stExpander"],
