@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="Operational Dashboard", layout="wide")
+st.set_page_config(page_title="ShelfIQ", layout="wide")
 
 st.title(":material/dashboard: Store Performance & Inventory Dashboard")
 
@@ -58,6 +58,13 @@ else:
 # --- 4. STREAMLIT KPI BOX LAYOUT RENDER ---
 st.markdown("---")
 
+def format_peso(value):
+    """Show cents only when they're non-zero, e.g. ₱1,303,193 vs ₱1,303,193.45"""
+    rounded = round(value, 2)
+    if rounded == round(rounded):
+        return f"₱{rounded:,.0f}"
+    return f"₱{rounded:,.2f}"
+
 # Global CSS Injector to recursively force alignment down all metric sub-div elements
 st.html(
     """
@@ -83,28 +90,28 @@ st.html(
     """
 )
 
-kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
+kpi_col1, kpi_col3, kpi_col4 = st.columns(3)
 
 with kpi_col1:
     st.metric(
         label="Total Inventory Value",
-        value=f"₱{total_inventory_value:,.2f}",
+        value=format_peso(total_inventory_value),
         border=True,
         help="Total retail market value of items currently physically sitting on store shelves."
     )
 
-with kpi_col2:
-    st.metric(
-        label="Stock Turnover Rate (90d)",
-        value=f"{stock_turnover_rate:.2f} x",
-        border=True,
-        help="Measures how many times inventory is sold out and replenished over a 90-day cycle."
-    )
+# with kpi_col2:
+#     st.metric(
+#         label="Stock Turnover Rate (90d)",
+#         value=f"{stock_turnover_rate:.2f} x",
+#         border=True,
+#         help="Measures how many times inventory is sold out and replenished over a 90-day cycle."
+#     )
 
 with kpi_col3:
     st.metric(
         label="Running Profit (Current Month)",
-        value=f"₱{running_profit_month:,.2f}",
+        value=format_peso(running_profit_month),
         #delta=f"₱{running_profit_month:,.2f}" if running_profit_month >= 0 else f"-₱{abs(running_profit_month):,.2f}",
         #delta_color="normal" if running_profit_month >= 0 else "inverse",
         border=True,
@@ -194,7 +201,7 @@ with tab1:
             x=chart_data[group_col],
             y=chart_data['total_cost_outlay'],
             name='Total Cost Price',
-            marker_color='#FFA07A', # Soft Coral
+            marker_color='#64748b', # Slate gray (neutral baseline)
             hovertemplate='₱%{y:,.2f}<extra></extra>'
         ))
 
@@ -202,7 +209,7 @@ with tab1:
             x=chart_data[group_col],
             y=chart_data['total_revenue_realized'],
             name='Total Selling Price',
-            marker_color='#20B2AA', # Light Sea Green
+            marker_color='#22c55e', # Brand green (positive outcome)
             hovertemplate='₱%{y:,.2f}<extra></extra>'
         ))
 
@@ -225,7 +232,7 @@ with tab1:
             x=chart_data[group_col],
             y=chart_data['total_cost_outlay'],
             name='Total Cost Price',
-            marker_color='#FFA07A', # Matches left chart for visual consistency
+            marker_color='#64748b', # Slate gray (matches left chart's neutral baseline)
             hovertemplate='₱%{y:,.2f}<extra></extra>'
         ))
 
@@ -233,7 +240,7 @@ with tab1:
             x=chart_data[group_col],
             y=chart_data['total_leakage_value'],
             name='Total Leakage Cost',
-            marker_color='#DC143C', # Crimson Red to indicate waste
+            marker_color='#ef4444', # Muted red (matches Marketing page risk tiers)
             hovertemplate='₱%{y:,.2f}<extra></extra>'
         ))
 

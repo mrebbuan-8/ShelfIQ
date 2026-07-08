@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="MSME Inventory Portal", layout="wide")
+st.set_page_config(page_title="ShelfIQ", layout="wide")
 
 # --- GLOBAL DARK NAVY + GREEN CARD THEME (brand color #22c55e) ---
 st.html(
@@ -29,6 +29,15 @@ st.html(
         /* Divider between the nav menu and the Global Master Data section */
         section[data-testid="stSidebar"] hr {
             margin: 0.75rem 0 1rem 0;
+        }
+
+        /* Tabs: rounded background highlight on the active tab, not just text/underline */
+        button[data-testid="stTab"] {
+            border-radius: 8px 8px 0 0 !important;
+            padding: 0.5rem 1rem !important;
+        }
+        button[data-testid="stTab"][aria-selected="true"] {
+            background-color: rgba(34, 197, 94, 0.14) !important;
         }
 
         /* Card-style content blocks: KPI tiles, tables, expanders */

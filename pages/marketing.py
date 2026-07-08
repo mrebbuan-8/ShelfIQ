@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Marketing Action Engine", layout="wide")
+st.set_page_config(page_title="ShelfIQ", layout="wide")
 
 st.title(":material/campaign: Marketing Action Engine")
 st.markdown(
@@ -235,11 +235,35 @@ display_df = display_df.rename(columns={
 # Convert decimal fraction (0.0–0.40) to percentage points (0–40) for display only
 display_df["Discount %"] = display_df["Discount %"] * 100
 
+# Friendly labels for the raw action_type codes
+action_type_labels = {
+    "none": "No Action",
+    "discount_only": "Discount Only",
+    "upcycle_recommended_alongside_discount": "Upcycle Recommended + Discount",
+    "upcycle_strongly_recommended": "Upcycle Strongly Recommended",
+}
+display_df["Action Type"] = display_df["Action Type"].map(action_type_labels).fillna(display_df["Action Type"])
+
+display_df = display_df[[
+    "SKU", "Product Name", "Category", "Tier", "Discount %",
+    "Action Type", "Upcycle Options", "Extra Recovery (₱)",
+]]
+
+# Muted background colors per urgency tier
+tier_colors = {
+    "Tier 1: Watch": "background-color: rgba(34, 197, 94, 0.15);",
+    "Tier 2: Early Markdown": "background-color: rgba(249, 115, 22, 0.15);",
+    "Tier 3: Priority Sell": "background-color: rgba(239, 68, 68, 0.15);",
+    "Tier 4: Final Markdown": "background-color: rgba(220, 38, 38, 0.22);",
+}
+
+def style_tier(value):
+    return tier_colors.get(value, "")
+
+styled_df = display_df.style.map(style_tier, subset=["Tier"])
+
 st.dataframe(
-    display_df[[
-        "SKU", "Product Name", "Category", "Tier", "Discount %",
-        "Action Type", "Upcycle Options", "Extra Recovery (₱)",
-    ]],
+    styled_df,
     use_container_width=True,
     hide_index=True,
     column_config={
