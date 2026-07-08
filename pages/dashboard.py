@@ -83,7 +83,7 @@ st.html(
     """
 )
 
-kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
+kpi_col1, kpi_col3, kpi_col4 = st.columns(3)
 
 with kpi_col1:
     st.metric(
@@ -93,13 +93,13 @@ with kpi_col1:
         help="Total retail market value of items currently physically sitting on store shelves."
     )
 
-with kpi_col2:
-    st.metric(
-        label="Stock Turnover Rate (90d)",
-        value=f"{stock_turnover_rate:.2f} x",
-        border=True,
-        help="Measures how many times inventory is sold out and replenished over a 90-day cycle."
-    )
+# with kpi_col2:
+#     st.metric(
+#         label="Stock Turnover Rate (90d)",
+#         value=f"{stock_turnover_rate:.2f} x",
+#         border=True,
+#         help="Measures how many times inventory is sold out and replenished over a 90-day cycle."
+#     )
 
 with kpi_col3:
     st.metric(
