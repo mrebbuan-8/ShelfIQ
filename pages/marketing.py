@@ -172,7 +172,7 @@ def apply_marketing_actions(df: pd.DataFrame) -> pd.DataFrame:
     # Only compute recovery estimates where a discount % actually exists
     recovery = df.apply(
         lambda row: estimate_upcycle_recovery(row.get(price_col), row["discount_pct"])
-        if row["discount_pct"] is not None else
+        if row["upcycle_options"] is not None else
         {"discounted_raw_value": None, "upcycled_value": None, "recovery_php": None},
         axis=1,
     )
@@ -229,6 +229,9 @@ display_df = display_df.rename(columns={
     "action_type": "Action Type",
     "upcycle_recovery_php": "Extra Recovery (₱)",
 })
+
+# Convert decimal fraction (0.0–0.40) to percentage points (0–40) for display only
+display_df["Discount %"] = display_df["Discount %"] * 100
 
 st.dataframe(
     display_df[[
