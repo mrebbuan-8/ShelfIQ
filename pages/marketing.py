@@ -99,12 +99,14 @@ def get_marketing_action(days_left, product_name: str, items_spoiled: int = 0):
 
     if tier in ("Out of Scope (Spoiled)", "Unknown"):
         action_type = "none"
+    elif tier == "Tier 1: Watch":
+        action_type = "No Action Needed"
     elif upcycle_options and tier == "Tier 3: Priority Sell":
-        action_type = "upcycle_recommended_alongside_discount"
+        action_type = "Upcycle Optional (Alongside Discount)"
     elif upcycle_options and tier == "Tier 4: Final Markdown":
-        action_type = "upcycle_strongly_recommended"
+        action_type = "Upcycle Strongly Recommended"
     else:
-        action_type = "discount_only"
+        action_type = "Discount Only"
 
     return {
         "tier": tier,
